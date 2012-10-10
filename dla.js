@@ -1,19 +1,3 @@
-//  Title: Diffusion-Limited Aggregation
-//  Description: 
-//  Date Started: 2012 Oct
-//  Last Modified: 2012 Oct
-//  http://www.asymptoticdesign.org/
-//  This work is licensed under a Creative Commons 3.0 License.
-//  (Attribution - NonCommerical - ShareAlike)
-//  http://creativecommons.org/licenses/by-nc-sa/3.0/
-//  
-//  In summary, you are free to copy, distribute, edit, and remix the work.
-//  Under the conditions that you attribute the work to me, it is for
-//  noncommercial purposes, and if you build upon this work or otherwise alter
-//  it, you may only distribute the resulting work under this license.
-//
-//  Of course, the conditions may be waived with permission from the author.
-
 var interval;
 var width, height;
 var canvas, ctx;
@@ -45,14 +29,13 @@ function setup() {
 function draw() {
     //check if all of the particles are stuck.
     if (particleList[particleList.length - 1].stick == true) {
-	particleList[particleList.length - 1].render();
 	//if all particles are stuck, draw the particle that just stuck last frame and add a new one.
-	particleList[particleList.length] = new Particle(width/2 + 10*Math.random(),height/2 + 10*Math.random());
+	particleList[particleList.length - 1].render();
+	particleList[particleList.length] = new Particle(width/2 + 5*Math.random(),height/2 + 5*Math.random());
 	}
-    //simulate particle diffusion of the active particle
+
     particleList[particleList.length - 1].diffuse();
-    //determine if we aggregate or not
-    particleList[particleList.length - 1].aggregate();
+    particleList[particleList.length - 1].aggregate();    
 }
 
 
@@ -109,6 +92,7 @@ function Particle(pos_x, pos_y) {
 	   stuckList[this.y][right] ||
 	   stuckList[this.y][left]) {
 	    this.stick = true;
+	    stuckList[this.y][this.x] = true;
 	}
 
 	//check diagonals
@@ -117,6 +101,7 @@ function Particle(pos_x, pos_y) {
 	   stuckList[down][right] ||
 	   stuckList[down][left]) {
 	    this.stick = true;
+	    stuckList[this.y][this.x] = true;
 	}
     }
 
