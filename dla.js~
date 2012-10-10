@@ -1,0 +1,58 @@
+var interval;
+var width, height;
+var canvas, ctx;
+var minRadius = 3;
+var maxAdditionalRadius = 10;
+var particleList = new Array();
+var particleNo1;
+
+function setup() {
+    width = 800;
+    height = 600;
+    canvas = document.getElementById("scrawl");
+    ctx = canvas.getContext("2d");
+    ctx.fillStyle = "rgb(0,0,0)";
+    ctx.fillRect(0,0,width,height);
+    interval = setInterval(draw,50);
+    particleList[0] = new Particle(width/2,height/2);
+    particleList[0].render();
+}
+    
+
+function draw() {
+    particleList[0].update();
+    particleList[0].render();
+}
+
+
+function Particle(pos_x, pos_y) {
+    this.x = pos_x;
+    this.y = pos_y;
+    this.rad = minRadius + maxAdditionalRadius*Math.random();
+
+    this.update = function() {
+	//update the x and y based on perlin noise
+	this.x += 0.5*Math.sin(2*Math.PI*perlin.noise(noiseScale*this.x,noiseScale*this.y));
+	this.y += 0.5*Math.cos(2*Math.PI*perlin.noise(noiseScale*this.x,noiseScale*this.y));
+	//deal with edge cases to wrap around
+	if (this.x < 0) {
+	    this.x = width;
+	}
+	if (this.x > width) {
+	    this.x = 0;
+	}
+	if (this.y < 0) {
+	    this.y = height;
+	}
+	if (this.y > height) {
+	    this.y = 0;
+	}
+    }
+
+    this.render = function() {
+	ctx.beginPath();
+	ctx.fillStyle = "rgba(255,255,255,1.0)"
+	ctx.arc(this.x,this.y,this.rad,0,2*Math.PI,true);
+	ctx.fill();
+    }
+}
