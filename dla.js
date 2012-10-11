@@ -73,7 +73,7 @@ function Particle(pos_x, pos_y) {
 	    //check for if it flows out of our containing circle
 	    //compute and compare Rsq to save on square roots
 	    var Rsq = (this.x - width/2)*(this.x - width/2) + (this.y - height/2)*(this.y - height/2);
-	    if (Rsq >= maxR*maxR) {
+	    if (Rsq >= 2*maxR*maxR) {
 		var theta = 2*Math.PI*Math.random();
 		this.x = Math.floor(maxR*Math.cos(theta)) + width/2;
 		this.y = Math.floor(maxR*Math.sin(theta)) + height/2;
