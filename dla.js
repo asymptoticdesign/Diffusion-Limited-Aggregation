@@ -5,8 +5,8 @@ var stuckList = [];
 var maxR = 1;
 
 function setup() {
-    width = 800;
-    height = 600;
+    width = 400;
+    height = 300;
     canvas = document.getElementById("scrawl");
     ctx = canvas.getContext("2d");
     ctx.fillStyle = "rgb(0,0,0)";
@@ -35,7 +35,7 @@ function draw() {
     else {
 	particleList[particleList.length - 1].render();
 	var currentRadius = computeR(particleList[particleList.length - 1].x, particleList[particleList.length - 1].y);
-	maxR = Math.max(maxR,currentRadius);
+	maxR = Math.max(maxR,1.2*currentRadius);
 	var theta = 2*Math.PI*Math.random();
 	particleList[particleList.length] = new Particle(Math.floor(maxR*Math.cos(theta)) + width/2,Math.floor(maxR*Math.sin(theta)) + height/2);
     }
@@ -50,6 +50,7 @@ function Particle(pos_x, pos_y) {
     this.y = pos_y;
     //boolean to determine if the particle stucks to the aggregate or not.
     this.stuck = false;
+    
 
     this.diffuse = function() {
 	if (!this.stuck) {
