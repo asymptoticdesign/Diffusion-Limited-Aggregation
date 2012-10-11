@@ -1,12 +1,12 @@
 var width, height;
 var canvas, ctx;
-var numParticles = 50000;
 var particleList = [];
 var stuckList = [];
+var maxR = 1;
 
 function setup() {
-    width = 800;
-    height = 600;
+    width = 80;
+    height = 60;
     canvas = document.getElementById("scrawl");
     ctx = canvas.getContext("2d");
     ctx.fillStyle = "rgb(0,0,0)";
@@ -16,10 +16,7 @@ function setup() {
     for(i = 0; i < width*height; i++) {
 	stuckList[i] = false;
     }
-    //initialize particle array
-    for(i = 0; i < numParticles; i++) {
-	particleList[i] = new Particle(Math.floor(width*Math.random()),Math.floor(height*Math.random()));
-    }
+
     //put a seed in the center
     stuckList[height/2 * width + width/2] = true;
     particleList[particleList.length] = new Particle(width/2,height/2);
@@ -29,14 +26,18 @@ function setup() {
     
 
 function draw() {
-    for(i = 0; i < numParticles; i++) {
-	if (particleList[i].stuck) {
-	    particleList[i].render()
-	}
-	else {
-	    particleList[i].diffuse()
-	    particleList[i].aggregate()
-	}
+    //if the most recent particle isn't part of the aggregate, continue the simulation.
+    if (!particleList[particleList.length - 1].stuck) {
+	particleList[particleList.length - 1].diffuse();
+	particleList[particleList.length - 1].aggregate();
+//	particleList[particleList.length - 1].render();
+    }
+    //if it is part of the aggregate, then create a new one!
+    else {
+	particleList[particleList.length - 1].render();
+	var theta = 2*Math.PI*Math.random();
+	particleList[particleList.length] = new Particle(Math.floor(maxR*Math.cos(theta)) + width/2,Math.floor(maxR*Math.sin(theta)) + height/2);
+	maxR++;
     }
 }
 
@@ -67,19 +68,15 @@ function Particle(pos_x, pos_y) {
 		break;
 	    }
 
-	//check for if it flows off the page
-	    if (this.x > width) {
-		this.x = 0;
-	    }
-	    if (this.x < 0) {
-		this.x = width;
-	    }
-	    if (this.y > height) {
-		this.y = 0;
-	    }
-	    if (this.y < 0) {
-		this.y = height;
-	    }
+	    //check for if it flows out of our containing circle
+	    //compute and compare Rsq to save on square roots
+	    var Rsq = (this.x - width/2)*(this.x - width/2) + (this.y - height/2)*(this.y - height/2);
+	    if (Rsq >= maxR*maxR) {
+		var theta = 2*Math.PI*Math.random();
+		this.x = Math.floor(maxR*Math.cos(theta)) + width/2;
+		this.y = Math.floor(maxR*Math.sin(theta)) + height/2;
+		}
+		
 	}
     }
     
