@@ -5,8 +5,8 @@ var stuckList = [];
 var maxR = 1;
 
 function setup() {
-    width = 80;
-    height = 60;
+    width = 800;
+    height = 600;
     canvas = document.getElementById("scrawl");
     ctx = canvas.getContext("2d");
     ctx.fillStyle = "rgb(0,0,0)";
@@ -30,15 +30,17 @@ function draw() {
     if (!particleList[particleList.length - 1].stuck) {
 	particleList[particleList.length - 1].diffuse();
 	particleList[particleList.length - 1].aggregate();
-//	particleList[particleList.length - 1].render();
     }
     //if it is part of the aggregate, then create a new one!
     else {
 	particleList[particleList.length - 1].render();
+	var currentRadius = computeR(particleList[particleList.length - 1].x, particleList[particleList.length - 1].y);
+	maxR = Math.max(maxR,currentRadius);
 	var theta = 2*Math.PI*Math.random();
 	particleList[particleList.length] = new Particle(Math.floor(maxR*Math.cos(theta)) + width/2,Math.floor(maxR*Math.sin(theta)) + height/2);
-	maxR++;
     }
+    //redraw screen to keep track of maxR circle
+    drawMaxR();
 }
 
 
@@ -103,6 +105,7 @@ function Particle(pos_x, pos_y) {
 	    this.stuck = true;
 	    stuckList[this.y * width + this.x] = true;
 	}
+
     }
 
     //render the particle
@@ -110,4 +113,23 @@ function Particle(pos_x, pos_y) {
 	ctx.fillStyle = "rgb(255,255,255)";
 	ctx.fillRect(this.x,this.y,1,1);
     }
+}
+
+function computeR(pos_x, pos_y) {
+    var rr = Math.sqrt((pos_x - width/2)*(pos_x - width/2) + (pos_y - height/2)*(pos_y - height/2));
+    return rr;
+}
+    
+function drawMaxR() {
+    ctx.fillStyle = "rgb(0,0,0)";
+    ctx.fillRect(0,0,width,height);
+    for(i = 0; i < particleList.length - 1; i++) {
+	if(particleList[i].stuck) {
+	    particleList[i].render();
+	}
+    }
+    ctx.beginPath();
+    ctx.strokeStyle = "rgb(0,255,0)";
+    ctx.arc(width/2,height/2,maxR,0,2*Math.PI,true);
+    ctx.stroke();
 }
