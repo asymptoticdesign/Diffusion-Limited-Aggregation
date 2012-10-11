@@ -111,6 +111,6 @@ function Particle(pos_x, pos_y) {
     //render the particle
     this.render = function() {
 	ctx.fillStyle = "rgb(255,255,255)";
-	ctx.fillRect(this.x,this.y,2,2);
+	ctx.fillRect(this.x,this.y,1,1);
     }
 }
