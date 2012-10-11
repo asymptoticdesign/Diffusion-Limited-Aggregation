@@ -124,9 +124,7 @@ function drawMaxR() {
     ctx.fillStyle = "rgb(0,0,0)";
     ctx.fillRect(0,0,width,height);
     for(i = 0; i < particleList.length - 1; i++) {
-	if(particleList[i].stuck) {
-	    particleList[i].render();
-	}
+	particleList[i].render();
     }
     ctx.beginPath();
     ctx.strokeStyle = "rgb(0,255,0)";
