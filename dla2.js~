@@ -1,9 +1,8 @@
 var width, height;
 var canvas, ctx;
 var particleList = [];
+var stuckList = [];
 var maxR = 1;
-var minParticleRadius = 5;
-var maxParticleRadius = 5;
 
 function setup() {
     width = 400;
@@ -49,7 +48,6 @@ function Particle(pos_x, pos_y) {
     //properties of the particle
     this.x = pos_x;
     this.y = pos_y;
-    this.rad = maxParticleRadius*Math.random() + minParticleRadius;
     //boolean to determine if the particle stucks to the aggregate or not.
     this.stuck = false;
 }
@@ -130,11 +128,8 @@ Particle.prototype.aggregate = function() {
 
     //render the particle
 Particle.prototype.render = function() {
-    ctx.beginPath();
-    ctx.fillStyle = "rgb(255,255,255)";
-    ctx.arc(width/2,height/2,maxR,0,2*Math.PI,true);
-    ctx.fill();
-
+	ctx.fillStyle = "rgb(255,255,255)";
+	ctx.fillRect(this.x,this.y,1,1);
 }
 
 function computeR(pos_x, pos_y) {
