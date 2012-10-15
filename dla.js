@@ -2,13 +2,13 @@ var width, height;
 var canvas, ctx;
 
 var particleList = [];
-var minParticleRadius = 5;
-var maxParticleRadius = 5;
+var minParticleRadius = 2;
+var maxParticleRadius = 2;
 var maxR = 5*maxParticleRadius;
 
 function setup() {
-    width = 800;
-    height = 600;
+    width = 400;
+    height = 400;
     canvas = document.getElementById("scrawl");
     ctx = canvas.getContext("2d");
     ctx.fillStyle = "rgb(0,0,0)";
@@ -22,6 +22,7 @@ function setup() {
     
 
 function draw() {
+    if(particleList.length < 200) {
     //if the most recent particle isn't part of the aggregate, continue the simulation.
     while (!particleList[particleList.length - 1].stuck) {
 	particleList[particleList.length - 1].diffuse();
@@ -35,6 +36,7 @@ function draw() {
     particleList[particleList.length] = new Particle(Math.floor(maxR*Math.cos(theta)) + width/2,Math.floor(maxR*Math.sin(theta)) + height/2);
     //redraw screen to keep track of maxR circle
     drawMaxR();
+    }
 }
 
 
