@@ -27,18 +27,16 @@ function setup() {
 
 function draw() {
     //if the most recent particle isn't part of the aggregate, continue the simulation.
-    if (!particleList[particleList.length - 1].stuck) {
+    while(!particleList[particleList.length - 1].stuck) {
 	particleList[particleList.length - 1].diffuse();
 	particleList[particleList.length - 1].aggregate();
     }
     //if it is part of the aggregate, then create a new one!
-    else {
-	particleList[particleList.length - 1].render();
-	var currentRadius = computeR(particleList[particleList.length - 1].x, particleList[particleList.length - 1].y);
-	maxR = Math.max(maxR,1.2*currentRadius);
-	var theta = 2*Math.PI*Math.random();
-	particleList[particleList.length] = new Particle(Math.floor(maxR*Math.cos(theta)) + width/2,Math.floor(maxR*Math.sin(theta)) + height/2);
-    }
+    particleList[particleList.length - 1].render();
+    var currentRadius = computeR(particleList[particleList.length - 1].x, particleList[particleList.length - 1].y);
+    maxR = Math.max(maxR,1.2*currentRadius);
+    var theta = 2*Math.PI*Math.random();
+    particleList[particleList.length] = new Particle(Math.floor(maxR*Math.cos(theta)) + width/2,Math.floor(maxR*Math.sin(theta)) + height/2);
     //redraw screen to keep track of maxR circle
     drawMaxR();
 }
