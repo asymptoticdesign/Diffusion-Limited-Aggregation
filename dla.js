@@ -1,45 +1,38 @@
 var width, height;
 var canvas, ctx;
+
 var particleList = [];
-var maxR = 1;
 var minParticleRadius = 5;
 var maxParticleRadius = 5;
+var maxR = 5*maxParticleRadius;
 
 function setup() {
-    width = 400;
-    height = 300;
+    width = 800;
+    height = 600;
     canvas = document.getElementById("scrawl");
     ctx = canvas.getContext("2d");
     ctx.fillStyle = "rgb(0,0,0)";
     ctx.fillRect(0,0,width,height);
     interval = setInterval(draw,1);
-    //initialize 'stuck' array
-    for(i = 0; i < width*height; i++) {
-	stuckList[i] = false;
-    }
 
     //put a seed in the center
-    stuckList[height/2 * width + width/2] = true;
     particleList[particleList.length] = new Particle(width/2,height/2);
     particleList[particleList.length - 1].stuck = true;
-    particleList[particleList.length - 1].render();
 }
     
 
 function draw() {
     //if the most recent particle isn't part of the aggregate, continue the simulation.
-    if (!particleList[particleList.length - 1].stuck) {
+    while (!particleList[particleList.length - 1].stuck) {
 	particleList[particleList.length - 1].diffuse();
-	particleList[particleList.length - 1].aggregate();
+	particleList[particleList.length - 1].intersect();
     }
     //if it is part of the aggregate, then create a new one!
-    else {
-	particleList[particleList.length - 1].render();
-	var currentRadius = computeR(particleList[particleList.length - 1].x, particleList[particleList.length - 1].y);
-	maxR = Math.max(maxR,1.2*currentRadius);
-	var theta = 2*Math.PI*Math.random();
-	particleList[particleList.length] = new Particle(Math.floor(maxR*Math.cos(theta)) + width/2,Math.floor(maxR*Math.sin(theta)) + height/2);
-    }
+    particleList[particleList.length - 1].render();
+    var currentMaximumDistance = computeR(particleList[particleList.length - 1].x, particleList[particleList.length - 1].y, particleList[particleList.length - 1].rad);
+    maxR = Math.max(maxR,1.2*currentMaximumDistance);
+    var theta = 2*Math.PI*Math.random();
+    particleList[particleList.length] = new Particle(Math.floor(maxR*Math.cos(theta)) + width/2,Math.floor(maxR*Math.sin(theta)) + height/2);
     //redraw screen to keep track of maxR circle
     drawMaxR();
 }
@@ -56,100 +49,60 @@ function Particle(pos_x, pos_y) {
     
 
 Particle.prototype.diffuse = function() {
-	if (!this.stuck) {
-	//compute a probability to determine which direction to move.
-	    var probability = Math.floor(8*Math.random());	
-	    switch(probability) {
-	    case 0:
-		this.x++;
-		break;
-	    case 1:
-		this.x--;
-		break;
-	    case 2:
-		this.y++;
-		break;
-	    case 3:
-		this.y--;
-		break;
-	    case 4:
-		this.x++;
-		this.y++;
-		break;
-	    case 5:
-		this.x++;
-		this.y--;
-		break;
-	    case 6:
-		this.x--;
-		this.y++;
-		break;
-	    case 7:
-		this.x--;
-		this.y--;
-		break;
-	    }
-
-	    //check for if it flows out of our containing circle
-	    //compute and compare Rsq to save on square roots
-	    var Rsq = (this.x - width/2)*(this.x - width/2) + (this.y - height/2)*(this.y - height/2);
-	    if (Rsq >= 2*maxR*maxR) {
-		var theta = 2*Math.PI*Math.random();
-		this.x = Math.floor(maxR*Math.cos(theta)) + width/2;
-		this.y = Math.floor(maxR*Math.sin(theta)) + height/2;
-		}
+    this.x += Math.random() - 0.5;
+    this.y += Math.random() - 0.5;    
+    
+    //check for if it flows out of our containing circle
+    //compute and compare Rsq to save on square roots
+    var Rsq = (this.x - width/2)*(this.x - width/2) + (this.y - height/2)*(this.y - height/2);
+    if (Rsq >= 2*maxR*maxR) {
+	var theta = 2*Math.PI*Math.random();
+	this.x = Math.floor(maxR*Math.cos(theta)) + width/2;
+	this.y = Math.floor(maxR*Math.sin(theta)) + height/2;
+    }
 		
+}
+    
+Particle.prototype.intersect = function() {
+    for(i = 0; i < particleList.length - 1; i++) {
+	//compute the total radius of the active particle the one chosen from the aggregate
+	var radSum = (this.rad + particleList[i].rad)*(this.rad + particleList[i].rad);
+	//compute the distance between their centers
+	var dist = (this.x - particleList[i].x)*(this.x - particleList[i].x) + (this.y - particleList[i].y)*(this.y - particleList[i].y);
+	if(dist <= radSum) {
+	    //if the distance between them is less than their radii, they intersect
+//	    console.log("Sum of radii: " + radSum);
+//	    console.log("Distance between particles: " + dist);
+	    console.log("Intersection at " + i + " !");
+	    this.stuck = true;
 	}
     }
-    
-Particle.prototype.aggregate = function() {
-	var left = this.x - 1;
-	var right = this.x + 1;
-	var up = this.y + 1;
-	var down = this.y - 1;
-/*	alert("L: " + left + "\n"
-	      + "R: " + right + "\n"
-	      + "U: " + up + "\n"
-	      + "D: " + down)
-*/
-
-	//check cardinal directions
-	if(stuckList[up*width + this.x] || stuckList[down*width + this.x] || stuckList[this.y*width + right] || stuckList[this.y*width + left]) {
-	    
-	    this.stuck = true;
-	    stuckList[this.y * width + this.x] = true;
-	}
-
-	//check diagonals
-	else if(stuckList[up*width + right] || stuckList[up*width + left] || stuckList[down*width + right] || stuckList[down*width + left]) {
-	    this.stuck = true;
-	    stuckList[this.y * width + this.x] = true;
-	}
-
 }
 
     //render the particle
 Particle.prototype.render = function() {
     ctx.beginPath();
-    ctx.fillStyle = "rgb(255,255,255)";
-    ctx.arc(width/2,height/2,maxR,0,2*Math.PI,true);
-    ctx.fill();
+    ctx.strokeStyle = "#FFFFFF";
+    ctx.arc(this.x,this.y,this.rad,0,2*Math.PI,true);
+    ctx.stroke();
 
 }
 
-function computeR(pos_x, pos_y) {
-    var rr = Math.sqrt((pos_x - width/2)*(pos_x - width/2) + (pos_y - height/2)*(pos_y - height/2));
+function computeR(pos_x, pos_y, particleRadius) {
+    var rr = Math.sqrt((pos_x - width/2)*(pos_x - width/2) + (pos_y - height/2)*(pos_y - height/2)) + particleRadius;
     return rr;
 }
     
 function drawMaxR() {
-    ctx.fillStyle = "rgb(0,0,0)";
+    ctx.fillStyle = "#000000";
     ctx.fillRect(0,0,width,height);
+    
     for(i = 0; i < particleList.length - 1; i++) {
 	particleList[i].render();
     }
+
     ctx.beginPath();
-    ctx.strokeStyle = "rgb(0,255,0)";
+    ctx.strokeStyle = "#FF0000";
     ctx.arc(width/2,height/2,maxR,0,2*Math.PI,true);
     ctx.stroke();
 }
