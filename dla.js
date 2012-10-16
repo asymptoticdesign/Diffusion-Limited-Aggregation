@@ -8,7 +8,7 @@ var maxR = 5*maxParticleRadius;
 
 function setup() {
     width = 400;
-    height = 400;
+    height = 300;
     canvas = document.getElementById("scrawl");
     ctx = canvas.getContext("2d");
     ctx.fillStyle = "rgb(0,0,0)";
@@ -17,15 +17,12 @@ function setup() {
     setInterval(draw,1);
     //rendering loop, at 30 fps
     setInterval(drawMaxR,34);
-
-    //put a seed in the center
-    particleList[particleList.length] = new Particle(width/2,height/2);
-    particleList[particleList.length - 1].stuck = true;
+    reset();
 }
     
 
 function draw() {
-    if(maxR < 1.41*width) {
+    if(maxR < height/2) {
     while (!particleList[particleList.length - 1].stuck) {
 	particleList[particleList.length - 1].diffuse();
 	particleList[particleList.length - 1].intersect();
@@ -36,6 +33,9 @@ function draw() {
     maxR = Math.max(maxR,1.2*currentMaximumDistance);
     var theta = 2*Math.PI*Math.random();
     particleList[particleList.length] = new Particle(Math.floor(maxR*Math.cos(theta)) + width/2,Math.floor(maxR*Math.sin(theta)) + height/2);
+    }
+    else {
+	reset();
     }
 }
 
@@ -107,4 +107,12 @@ function drawMaxR() {
     ctx.strokeStyle = "#FF0000";
     ctx.arc(width/2,height/2,maxR,0,2*Math.PI,true);
     ctx.stroke();
+}
+
+function reset() {
+    maxR = 5*maxParticleRadius;
+    //put a seed in the center
+    particleList = [];
+    particleList[particleList.length] = new Particle(width/2,height/2);
+    particleList[particleList.length - 1].stuck = true;
 }
