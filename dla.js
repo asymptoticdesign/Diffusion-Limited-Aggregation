@@ -48,7 +48,7 @@ function Particle(pos_x, pos_y) {
     //boolean to determine if the particle stucks to the aggregate or not.
     this.stuck = false;
 
-    this.diffuse = function() {
+Particle.prototype.diffuse = function() {
 	if (!this.stuck) {
 	//compute a probability to determine which direction to move.
 	    var probability = Math.floor(4*Math.random());	
@@ -83,7 +83,7 @@ function Particle(pos_x, pos_y) {
 	}
     }
     
-    this.aggregate = function() {
+Particle.prototype.aggregate = function() {
 	var left = this.x - 1;
 	var right = this.x + 1;
 	var up = this.y + 1;
@@ -109,7 +109,7 @@ function Particle(pos_x, pos_y) {
     }
 
     //render the particle
-    this.render = function() {
+Particle.prototype.render = function() {
 	ctx.fillStyle = "rgb(255,255,255)";
 	ctx.fillRect(this.x,this.y,1,1);
     }
