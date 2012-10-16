@@ -16,7 +16,7 @@ function setup() {
     //update loop, as fast as possible
     setInterval(draw,1);
     //rendering loop, at 30 fps
-    setIntervals(drawMaxR,34);
+    setInterval(drawMaxR,34);
 
     //put a seed in the center
     particleList[particleList.length] = new Particle(width/2,height/2);
