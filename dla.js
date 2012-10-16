@@ -11,7 +11,9 @@ function setup() {
     ctx = canvas.getContext("2d");
     ctx.fillStyle = "rgb(0,0,0)";
     ctx.fillRect(0,0,width,height);
+    //draw loop updates the aggregate as fast as possible
     setInterval(draw,1);
+    //sets the rendering interval to 30 fps, regardless of the updates
     setInterval(drawMaxR,34);
     //initialize 'stuck' array
     for(i = 0; i < width*height; i++) {
