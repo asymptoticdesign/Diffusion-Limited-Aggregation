@@ -25,6 +25,7 @@ function setup() {
     
 
 function draw() {
+    if(maxR < 1.41*width) {
     while (!particleList[particleList.length - 1].stuck) {
 	particleList[particleList.length - 1].diffuse();
 	particleList[particleList.length - 1].intersect();
@@ -35,6 +36,7 @@ function draw() {
     maxR = Math.max(maxR,1.2*currentMaximumDistance);
     var theta = 2*Math.PI*Math.random();
     particleList[particleList.length] = new Particle(Math.floor(maxR*Math.cos(theta)) + width/2,Math.floor(maxR*Math.sin(theta)) + height/2);
+    }
 }
 
 
