@@ -2,7 +2,7 @@ var width, height;
 var canvas, ctx;
 var particleList = [];
 var stuckList = [];
-var maxR = 1;
+var maxRVal = 1;
 
 function setup() {
     width = 400;
@@ -16,19 +16,12 @@ function setup() {
     //sets the rendering interval to 30 fps, regardless of the updates
     setInterval(drawMaxR,34);
     //initialize 'stuck' array
-    for(i = 0; i < width*height; i++) {
-	stuckList[i] = false;
-    }
-
-    //put a seed in the center
-    stuckList[height/2 * width + width/2] = true;
-    particleList[particleList.length] = new Particle(width/2,height/2);
-    particleList[particleList.length - 1].stuck = true;
-    particleList[particleList.length - 1].render();
+    reset();
 }
     
 
 function draw() {
+    if(maxR < height/2) {
     //if the most recent particle isn't part of the aggregate, continue the simulation.
     while(!particleList[particleList.length - 1].stuck) {
 	particleList[particleList.length - 1].diffuse();
@@ -40,6 +33,10 @@ function draw() {
     var theta = 2*Math.PI*Math.random();
     particleList[particleList.length] = new Particle(Math.floor(maxR*Math.cos(theta)) + width/2,Math.floor(maxR*Math.sin(theta)) + height/2);
 //    drawMaxR();
+    }
+    else {
+	reset();
+    }
 }
 
 
@@ -130,4 +127,19 @@ function drawMaxR() {
     ctx.strokeStyle = "rgb(0,255,0)";
     ctx.arc(width/2,height/2,maxR,0,2*Math.PI,true);
     ctx.stroke();
+}
+
+function reset() {
+    for(i = 0; i < width*height; i++) {
+	stuckList[i] = false;
+    }
+
+    maxR = maxRVal;
+    
+    particleList = [];
+    //put a seed in the center
+    stuckList[height/2 * width + width/2] = true;
+    particleList[particleList.length] = new Particle(width/2,height/2);
+    particleList[particleList.length - 1].stuck = true;
+    particleList[particleList.length - 1].render();
 }
