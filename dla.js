@@ -13,7 +13,10 @@ function setup() {
     ctx = canvas.getContext("2d");
     ctx.fillStyle = "rgb(0,0,0)";
     ctx.fillRect(0,0,width,height);
-    interval = setInterval(draw,1);
+    //update loop, as fast as possible
+    setInterval(draw,1);
+    //rendering loop, at 30 fps
+    setIntervals(drawMaxR,34);
 
     //put a seed in the center
     particleList[particleList.length] = new Particle(width/2,height/2);
@@ -22,8 +25,6 @@ function setup() {
     
 
 function draw() {
-    if(particleList.length < 200) {
-    //if the most recent particle isn't part of the aggregate, continue the simulation.
     while (!particleList[particleList.length - 1].stuck) {
 	particleList[particleList.length - 1].diffuse();
 	particleList[particleList.length - 1].intersect();
@@ -34,9 +35,6 @@ function draw() {
     maxR = Math.max(maxR,1.2*currentMaximumDistance);
     var theta = 2*Math.PI*Math.random();
     particleList[particleList.length] = new Particle(Math.floor(maxR*Math.cos(theta)) + width/2,Math.floor(maxR*Math.sin(theta)) + height/2);
-    //redraw screen to keep track of maxR circle
-    drawMaxR();
-    }
 }
 
 
