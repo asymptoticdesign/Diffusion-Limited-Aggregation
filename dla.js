@@ -11,7 +11,8 @@ function setup() {
     ctx = canvas.getContext("2d");
     ctx.fillStyle = "rgb(0,0,0)";
     ctx.fillRect(0,0,width,height);
-    interval = setInterval(draw,1);
+    setInterval(draw,1);
+    setInterval(drawMaxR,34);
     //initialize 'stuck' array
     for(i = 0; i < width*height; i++) {
 	stuckList[i] = false;
@@ -32,13 +33,11 @@ function draw() {
 	particleList[particleList.length - 1].aggregate();
     }
     //if it is part of the aggregate, then create a new one!
-    particleList[particleList.length - 1].render();
     var currentRadius = computeR(particleList[particleList.length - 1].x, particleList[particleList.length - 1].y);
     maxR = Math.max(maxR,1.2*currentRadius);
     var theta = 2*Math.PI*Math.random();
     particleList[particleList.length] = new Particle(Math.floor(maxR*Math.cos(theta)) + width/2,Math.floor(maxR*Math.sin(theta)) + height/2);
-    //redraw screen to keep track of maxR circle
-    drawMaxR();
+//    drawMaxR();
 }
 
 
